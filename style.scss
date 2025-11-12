@@ -78,6 +78,13 @@ section {
           font-size: 1.5rem;
         }
       }
+      #score,
+      #time {
+        transition: color 0.3s;
+      }
+      #score.updated {
+        color: lime;
+      }
     }
     .board {
       border: 1px solid var(--border-primary-color);
@@ -98,15 +105,12 @@ section {
         background-position: center;
       }
       .snake-head {
-        background-image: url(./snake-head.jpg);
+        background-image: url(./snake-head.png);
         background-size: cover;
         background-position: center;
+        filter: drop-shadow(0 0 8px lime);
       }
-      .food {
-        background-image: url(./apple.png);
-        background-size: cover;
-        background-position: center;
-      }
+      
     }
   }
   .modal {
@@ -147,6 +151,7 @@ section {
     transform: scale(1.1);
     background-color: #141414;
   }
+  /*CountDown*/
   .countdown {
     position: absolute;
     top: 50%;
@@ -156,16 +161,37 @@ section {
     color: #fff;
     font-weight: bold;
     animation: pop 0.4s ease;
+    @keyframes pop {
+      from {
+        transform: translate(-50%, -50%) scale(0.3);
+        opacity: 0.3;
+      }
+      to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+    }
+  }
+  /*Shake animation*/
+  @keyframes shake {
+    0% {
+      transform: translate(2px, 2px);
+    }
+    25% {
+      transform: translate(-2px, -2px);
+    }
+    50% {
+      transform: translate(2px, -2px);
+    }
+    75% {
+      transform: translate(-2px, 2px);
+    }
+    100% {
+      transform: translate(0, 0);
+    }
   }
 
-  @keyframes pop {
-    from {
-      transform: translate(-50%, -50%) scale(0.3);
-      opacity: 0.3;
-    }
-    to {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-    }
+  .board.shake {
+    animation: shake 0.2s;
   }
 }

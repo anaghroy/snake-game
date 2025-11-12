@@ -59,6 +59,8 @@ section {
   flex-direction: column;
   height: 100%;
   gap: var(--space-lg);
+  /*CountDown*/
+  /*Shake animation*/
 }
 main section .infos,
 section section .infos {
@@ -76,6 +78,16 @@ main section .infos .info h3,
 section section .infos .info h3 {
   color: var(--text-primary-color);
   font-size: 1.5rem;
+}
+main section .infos #score,
+main section .infos #time,
+section section .infos #score,
+section section .infos #time {
+  transition: color 0.3s;
+}
+main section .infos #score.updated,
+section section .infos #score.updated {
+  color: lime;
 }
 main section .board,
 section section .board {
@@ -98,15 +110,10 @@ section section .board .fill {
 }
 main section .board .snake-head,
 section section .board .snake-head {
-  background-image: url(./snake-head.jpg);
+  background-image: url(./snake-head.png);
   background-size: cover;
   background-position: center;
-}
-main section .board .food,
-section section .board .food {
-  background-image: url(./apple.png);
-  background-size: cover;
-  background-position: center;
+  filter: drop-shadow(0 0 8px lime);
 }
 main .modal,
 section .modal {
@@ -176,4 +183,25 @@ section .countdown {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
   }
+}
+@keyframes shake {
+  0% {
+    transform: translate(2px, 2px);
+  }
+  25% {
+    transform: translate(-2px, -2px);
+  }
+  50% {
+    transform: translate(2px, -2px);
+  }
+  75% {
+    transform: translate(-2px, 2px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+main .board.shake,
+section .board.shake {
+  animation: shake 0.2s;
 }/*# sourceMappingURL=style.css.map */

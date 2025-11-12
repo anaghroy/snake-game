@@ -15,11 +15,19 @@ const BLOCK_SIZE = 50;
 const cols = Math.floor(board.clientWidth / BLOCK_SIZE);
 const rows = Math.floor(board.clientHeight / BLOCK_SIZE);
 
+// Play paused
+let isPaused = false;
+
+// Sound Effects
+const eatSound = new Audio("./sounds/eating.mp3");
+const gameOverSound = new Audio("./sounds/game-over.mp3");
+
 // Game State
 let snake = [{ x: 1, y: 3 }];
 let direction = "down";
 let food = randomFood();
 let score = 0;
+let speed = 400; //Speed
 let highScore = Number(localStorage.getItem("highScore")) || 0;
 let time = { min: 0, sec: 0 };
 
@@ -41,9 +49,39 @@ highScoreElement.textContent = highScore;
 
 // Utility Functions
 function randomFood() {
+  // Define different food types
+  const foodTypes = [
+    { type: "normal", score: 10, image: "./foods/apple.png", chance: 0.7 },
+    {
+      type: "golden",
+      score: 30,
+      image: "./foods/golden-apple.png",
+      chance: 0.2,
+    },
+    {
+      type: "rotten",
+      score: -10,
+      image: "./foods/rotten.png",
+      chance: 0.1,
+    },
+  ];
+
+  // Randomly select based on probability
+  const rand = Math.random();
+  let cumulative = 0;
+  let selected = foodTypes[0];
+  for (const f of foodTypes) {
+    cumulative += f.chance;
+    if (rand < cumulative) {
+      selected = f;
+      break;
+    }
+  }
+
   return {
     x: Math.floor(Math.random() * rows),
     y: Math.floor(Math.random() * cols),
+    ...selected, // includes type, score, and image
   };
 }
 
@@ -69,6 +107,18 @@ function drawSnake() {
   snake.forEach(({ x, y }, i) => {
     const block = blocks[`${x}-${y}`];
     block.classList.add(i === 0 ? "snake-head" : "fill");
+    if (i === 0) {
+      block.style.transform =
+        direction === "up"
+          ? "rotate(270deg)"
+          : direction === "down"
+          ? "rotate(90deg)"
+          : direction === "left"
+          ? "rotate(180deg)"
+          : "rotate(0deg)";
+    } else {
+      block.style.transform = "none";
+    }
   });
 }
 
@@ -84,20 +134,48 @@ function moveSnake() {
   moveMap[direction]();
 
   // Wall collision
-  if (head.x < 0 || head.x >= rows || head.y < 0 || head.y >= cols)
+  if (head.x < 0 || head.x >= rows || head.y < 0 || head.y >= cols) {
+    gameOverSound.play();
     return gameOver();
+  }
 
   // Self collision
   if (snake.some((seg) => seg.x === head.x && seg.y === head.y))
     return gameOver();
 
+  //Adjust Speed
+  function adjustSpeed() {
+    if (speed > 150 && score % 50 === 0) {
+      speed -= 20;
+      clearInterval(moveInterval);
+      moveInterval = setInterval(render, speed);
+    }
+  }
   // Eat food
   if (head.x === food.x && head.y === food.y) {
-    blocks[`${food.x}-${food.y}`].classList.remove("food");
-    food = randomFood();
-    blocks[`${food.x}-${food.y}`].classList.add("food");
-    score += 10;
+    eatSound.play();
+    if (food.type === "rotten") {
+      board.classList.add("shake");
+      setTimeout(() => board.classList.remove("shake"), 200);
+    }
+    adjustSpeed();
+    // Remove old food
+    const foodBlock = blocks[`${food.x}-${food.y}`];
+    foodBlock.classList.remove("food");
+    foodBlock.style.backgroundImage = "";
+
+    // Update score based on food type
+    score += food.score;
+    if (score < 0) score = 0; // prevent negative score
     scoreElement.textContent = score;
+
+    // Spawn new food
+    food = randomFood();
+    const newFoodBlock = blocks[`${food.x}-${food.y}`];
+    newFoodBlock.classList.add("food");
+    newFoodBlock.style.backgroundImage = `url(${food.image})`;
+    newFoodBlock.style.backgroundSize = "cover";
+    newFoodBlock.style.backgroundPosition = "center";
 
     if (score > highScore) {
       highScore = score;
@@ -117,7 +195,11 @@ function moveSnake() {
 
 // Core Game Logic
 function render() {
-  blocks[`${food.x}-${food.y}`].classList.add("food");
+  const foodBlock = blocks[`${food.x}-${food.y}`];
+  foodBlock.classList.add("food");
+  foodBlock.style.backgroundImage = `url(${food.image})`;
+  foodBlock.style.backgroundSize = "cover";
+  foodBlock.style.backgroundPosition = "center";
   moveSnake();
 }
 
@@ -203,3 +285,17 @@ startButton.addEventListener("click", () => {
   startCountdown(startGame);
 });
 restartButton.addEventListener("click", startGame);
+
+// Enter spacebar to paused the game!
+window.addEventListener("keydown", (e) => {
+  if (e.key === " ") {
+    isPaused = !isPaused;
+    if (isPaused) {
+      clearInterval(moveInterval);
+      clearInterval(timerInterval);
+    } else {
+      moveInterval = setInterval(render, speed);
+      timerInterval = setInterval(updateTime, 1000);
+    }
+  }
+});

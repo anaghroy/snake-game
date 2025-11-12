@@ -98,11 +98,17 @@ section .modal {
   align-items: center;
 }
 main .modal .start-game,
-section .modal .start-game {
+main .modal .game-over,
+section .modal .start-game,
+section .modal .game-over {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-lg);
+}
+main .modal .game-over,
+section .modal .game-over {
+  display: none;
 }
 main .btn,
 section .btn {

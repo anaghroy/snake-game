@@ -96,11 +96,15 @@ section {
     display: flex;
     justify-content: center;
     align-items: center;
-    .start-game {
+    .start-game,
+    .game-over {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: var(--space-lg);
+    }
+    .game-over {
+      display: none;
     }
   }
   .btn {

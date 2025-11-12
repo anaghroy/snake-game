@@ -122,6 +122,14 @@ function drawSnake() {
   });
 }
 
+//Adjust Speed
+function adjustSpeed() {
+  if (speed > 150 && score % 50 === 0) {
+    speed -= 20;
+    clearInterval(moveInterval);
+    moveInterval = setInterval(render, speed);
+  }
+}
 function moveSnake() {
   const head = { ...snake[0] };
 
@@ -143,14 +151,6 @@ function moveSnake() {
   if (snake.some((seg) => seg.x === head.x && seg.y === head.y))
     return gameOver();
 
-  //Adjust Speed
-  function adjustSpeed() {
-    if (speed > 150 && score % 50 === 0) {
-      speed -= 20;
-      clearInterval(moveInterval);
-      moveInterval = setInterval(render, speed);
-    }
-  }
   // Eat food
   if (head.x === food.x && head.y === food.y) {
     eatSound.play();
@@ -219,10 +219,18 @@ function gameOver() {
 }
 
 function resetGameState() {
-  // Clear board visuals
-  Object.values(blocks).forEach((block) =>
-    block.classList.remove("fill", "food")
-  );
+  speed = 400;
+
+  // Clear board visuals COMPLETELY
+  Object.values(blocks).forEach((block) => {
+    block.classList.remove("fill", "food", "snake-head");
+    block.style.backgroundImage = "";
+    block.style.backgroundSize = "";
+    block.style.backgroundPosition = "";
+  });
+
+  // Remove leftover shake effect
+  board.classList.remove("shake");
 
   // Reset data
   snake = [{ x: 1, y: 3 }];
@@ -231,6 +239,7 @@ function resetGameState() {
   score = 0;
   time = { min: 0, sec: 0 };
 
+  // Reset UI
   scoreElement.textContent = score;
   timeElement.textContent = "00-00";
   highScoreElement.textContent = highScore;

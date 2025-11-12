@@ -75,6 +75,7 @@ section section .board {
 main section .board .block,
 section section .board .block {
   border: 1px solid var(--border-primary-color);
+  border-radius: 50%;
 }
 main section .board .fill,
 section section .board .fill {

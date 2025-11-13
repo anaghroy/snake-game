@@ -115,7 +115,6 @@ function updateTimeDisplay(min, sec) {
   animateUpdate(timeElement);
 }
 
-
 function clearSnake() {
   snake.forEach(({ x, y }) => {
     const block = blocks[`${x}-${y}`];
@@ -151,6 +150,13 @@ function adjustSpeed() {
     moveInterval = setInterval(render, speed);
   }
 }
+
+function showLevelUp() {
+  levelUpElement.textContent = `Level ${level}`;
+  levelUpElement.classList.add("show");
+  setTimeout(() => levelUpElement.classList.remove("show"), 1000);
+}
+
 function moveSnake() {
   const head = { ...snake[0] };
 
@@ -187,7 +193,7 @@ function moveSnake() {
 
     // Update score based on food type
     score += food.score;
-    if (score < 0) score = 0; // prevent negative score
+    if (score < 0) score = 0;
     updateScore(score);
 
     // Spawn new food
@@ -212,7 +218,6 @@ function moveSnake() {
   }
 
   drawSnake();
-  
 }
 
 // Core Game Logic

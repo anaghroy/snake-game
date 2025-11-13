@@ -94,7 +94,27 @@ function updateTime() {
   timeElement.textContent = `${String(time.min).padStart(2, "0")}-${String(
     time.sec
   ).padStart(2, "0")}`;
+  updateTimeDisplay(time.min, time.sec);
 }
+
+// Smooth animation for score and time updates
+function animateUpdate(element) {
+  element.classList.add("updated");
+  setTimeout(() => element.classList.remove("updated"), 300);
+}
+
+function updateScore(newScore) {
+  scoreElement.textContent = newScore;
+  animateUpdate(scoreElement);
+}
+
+function updateTimeDisplay(min, sec) {
+  timeElement.textContent = `${String(min).padStart(2, "0")}-${String(
+    sec
+  ).padStart(2, "0")}`;
+  animateUpdate(timeElement);
+}
+
 
 function clearSnake() {
   snake.forEach(({ x, y }) => {
@@ -124,8 +144,9 @@ function drawSnake() {
 
 //Adjust Speed
 function adjustSpeed() {
-  if (speed > 150 && score % 50 === 0) {
-    speed -= 20;
+  const newSpeed = 400 - Math.floor(score / 50) * 20;
+  if (newSpeed !== speed && newSpeed >= 150) {
+    speed = newSpeed;
     clearInterval(moveInterval);
     moveInterval = setInterval(render, speed);
   }
@@ -167,7 +188,7 @@ function moveSnake() {
     // Update score based on food type
     score += food.score;
     if (score < 0) score = 0; // prevent negative score
-    scoreElement.textContent = score;
+    updateScore(score);
 
     // Spawn new food
     food = randomFood();
@@ -191,6 +212,7 @@ function moveSnake() {
   }
 
   drawSnake();
+  
 }
 
 // Core Game Logic
@@ -293,7 +315,11 @@ startButton.addEventListener("click", () => {
   modal.style.display = "none";
   startCountdown(startGame);
 });
-restartButton.addEventListener("click", startGame);
+// Restart Logic
+restartButton.addEventListener("click", () => {
+  modal.style.display = "none";
+  startCountdown(startGame);
+});
 
 // Enter spacebar to paused the game!
 window.addEventListener("keydown", (e) => {

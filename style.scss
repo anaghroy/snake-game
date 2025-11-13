@@ -80,10 +80,16 @@ section {
       }
       #score,
       #time {
-        transition: color 0.3s;
+        transition: color 0.4s ease, transform 0.3s ease;
+        display: inline-block;
       }
       #score.updated {
-        color: lime;
+        color: #00ff80;
+        scale: 1.2;
+      }
+      #time.updated {
+        color: #f95939;
+        scale: 1.2;
       }
     }
     .board {
@@ -110,7 +116,6 @@ section {
         background-position: center;
         filter: drop-shadow(0 0 8px lime);
       }
-      
     }
   }
   .modal {

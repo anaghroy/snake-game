@@ -83,11 +83,18 @@ main section .infos #score,
 main section .infos #time,
 section section .infos #score,
 section section .infos #time {
-  transition: color 0.3s;
+  transition: color 0.4s ease, transform 0.3s ease;
+  display: inline-block;
 }
 main section .infos #score.updated,
 section section .infos #score.updated {
-  color: lime;
+  color: #00ff80;
+  scale: 1.2;
+}
+main section .infos #time.updated,
+section section .infos #time.updated {
+  color: #f95939;
+  scale: 1.2;
 }
 main section .board,
 section section .board {
